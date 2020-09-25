@@ -1,0 +1,74 @@
+DEFINE LCD_DREG PORTD           'LCD data portunun baðlandýðý pic portu 
+
+DEFINE LCD_DBIT 0                        '4-bit bus için data bit(0yada4) baþlangýç
+
+DEFINE LCD_RSREG PORTE          'LCD RS in baðlandýðý pic portu 
+
+DEFINE LCD_RSBIT 0                      'RS in baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_EREG PORTE            'LCD E nin baðlandýðý pic portu 
+
+DEFINE LCD_EBIT 2                        'LCD E nin baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_BITS 8                             'PortD nin 8 biti veri transferi için kullanýldý
+
+TRISE=%000                                       'Aslýnda PortE.1 direkt topraða çekilse olurdu ama 
+
+PortE.1=0                                             ' PortE.1=0 olarak yaptýk
+
+ADCON1=7                                         'porta ve porte yi dijitale ayarla
+
+PAUSE 100
+define HSER_RCSTA 90h
+DEFINE HSER_TXSTA 24h
+DEFINE HSER_BAUD 9600
+DEFINE HSER_CLROERR 1
+
+lcdout $fe,$40,1,3,7,31,16,23,7,7
+lcdout $fe,$48,31,4,4,31,31,31,0,0
+lcdout $fe,$50,16,8,4,31,1,29,28,28
+lcdout $fe,$58,0,0,0,0,0,31,31,0
+lcdout $fe,$60,0,0,0,0,31,31,31,0
+lcdout $fe,$68,0,0,0,31,31,31,31,0
+lcdout $fe,$70,0,0,31,31,31,31,31,0
+lcdout $fe,$78,0,31,31,31,31,31,31,0
+
+symbol trigger=PortB.7
+symbol echo=PortB.6
+salinim var word
+mesafe var word
+sonuc_cm con 600
+trigger=0
+
+label:
+    gosub oku
+    lcdout $fe,1
+    if mesafe<=1 then
+        lcdout 0,1,2,"_"
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    elseif mesafe>1 and mesafe<=2 then
+        lcdout 0,1,2,"_",3
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    elseif mesafe>2 and mesafe<=4 then
+        lcdout 0,1,2,"_",3,4
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    elseif mesafe>4 and mesafe<=6 then
+        lcdout 0,1,2,"_",3,4,5
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    elseif mesafe>6 and mesafe<=8 then
+        lcdout 0,1,2,"_",3,4,5,6
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    elseif mesafe>8 then
+        lcdout 0,1,2,"_",3,4,5,6,7
+        lcdout $fe,$c0,"Mesafe:",#mesafe
+    endif
+    
+    pause 100
+goto label
+
+oku:
+    pulsout trigger,1 '10us lik salýným gönder
+    pulsin echo,1,salinim '10us deki salýnýmlarý oku
+    mesafe = (salinim/sonuc_cm) 'alýnan salýným miktarýný cm olarak mesafeye çevir
+    pause 10
+return
