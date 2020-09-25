@@ -1,0 +1,22 @@
+define LOADER_USED 1
+ADCON1=7
+TrisA=0
+TrisB=0
+symbol transistor=PortA.0
+transistor=1
+i var byte
+i=1
+PortB=0
+label:
+   while i<128 
+     PortB=i
+     pause 350
+     i=i<<1
+   wend
+   i=128
+   while i>1
+     PortB=i
+     pause 350
+     i=i>>1
+   wend
+goto label
