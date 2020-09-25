@@ -1,0 +1,200 @@
+DEFINE LCD_DREG PORTD           'LCD data portunun baðlandýðý pic portu 
+DEFINE LCD_DBIT 0                        '4-bit bus için data bit(0yada4) baþlangýç
+DEFINE LCD_RSREG PORTE          'LCD RS in baðlandýðý pic portu 
+DEFINE LCD_RSBIT 0                      'RS in baðlandýðý pic portE nin bit numarasý
+DEFINE LCD_EREG PORTE            'LCD E nin baðlandýðý pic portu 
+DEFINE LCD_EBIT 2                        'LCD E nin baðlandýðý pic portE nin bit numarasý
+DEFINE LCD_BITS 8                             'PortD nin 8 biti veri transferi için kullanýldý
+TRISE=%000                                       'Aslýnda PortE.1 direkt topraða çekilse olurdu ama 
+PortE.1=0                                             ' PortE.1=0 olarak yaptýk
+ADCON1=7                                         'porta ve porte yi dijitale ayarla
+
+PAUSE 100
+PortB=0
+
+symbol  sensor=PortB.0
+nem var byte
+ondaliknem var byte
+sicaklik var byte
+ondaliksicaklik var byte
+kontrol var byte
+i var byte
+ bekle con 40
+'lcddeneme:
+'    lcdout$fe,1,"deneme"
+'    lcdout $fe,$C0,"meneme"
+'    lcdout $fe,$94,"nemene"
+'    pause 100
+'goto lcddeneme
+
+lcdout $fe,$40,28,20,28,0,0,0,0
+
+label:  
+    nem=0 :ondaliknem=0
+    sicaklik=0 :ondaliksicaklik=0
+    TrisB=0
+    sensor=0
+    pause 18                   'Milisaniye
+    sensor=1
+    pauseus 40                 'mikrosaniye
+   
+    TrisB=1
+    while sensor =0
+    wend
+    pauseus 80
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus bekle
+        if sensor=1 then nem.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus bekle
+        if sensor=1 then ondaliknem.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus bekle
+        if sensor=1 then sicaklik.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus bekle
+        if sensor=1 then ondaliksicaklik.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus bekle
+        if sensor=1 then kontrol.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    lcdout $fe,1,"Nem : ",#nem,",",#ondaliknem,"%"
+    lcdout $fe,$C0,"Sicaklik : ",#sicaklik,",",#ondaliksicaklik," ",0,"C"
+    gosub Hissedilen   
+goto label
+
+Hissedilen:
+    if sicaklik<25 then
+        lcdout $fe,$94,"Soguk"
+    elseif sicaklik=25 then
+        if nem<=60 then lcdout $fe,$94,"Soguk ve Serin"
+        if nem>60 then lcdout $fe,$94,"Sicak"
+    elseif sicaklik=26 then
+        if nem<=45 then lcdout $fe,$94,"Soguk ve Serin"
+        if nem>45 then lcdout $fe,$94,"Sicak"
+    elseif sicaklik=27 then
+        if nem<=20 then lcdout $fe,$94,"Soguk ve Serin"
+        if nem>20 then lcdout $fe,$94,"Sicak"
+    elseif sicaklik=28 then
+        if nem<=15 then lcdout $fe,$94,"Soguk ve Serin"
+        if nem>15 and nem<=85 then lcdout $fe,$94,"Sicak"
+        if nem>85 then lcdout $fe,$94,"Cok Sicak"
+    elseif sicaklik=29 then
+        if nem<=70 then lcdout $fe,$94,"Sicak"
+        if nem>70 then lcdout $fe,$94,"Cok Sicak"
+    elseif sicaklik=30 then
+        if nem<=55 then lcdout $fe,$94,"Sicak"
+        if nem>55 and nem<=90 then lcdout $fe,$94,"Cok Sicak"
+        if nem>90 then lcdout $fe,$94,"Tehlikeli Sicak"
+    elseif sicaklik=31 then
+        if nem<=45 then lcdout $fe,$94,"Sicak"
+        if nem>45 and nem<=80 then lcdout $fe,$94,"Cok Sicak"
+        if nem>80 then lcdout $fe,$94,"Tehlikeli Sicak"
+    elseif sicaklik=32 then
+        if nem<=35 then lcdout $fe,$94,"Sicak"
+        if nem>35 and nem<=70 then lcdout $fe,$94,"Cok Sicak"
+        if nem>70 then lcdout $fe,$94,"Tehlikeli Sicak"
+    elseif sicaklik=33 then
+        if nem<=30 then lcdout $fe,$94,"Sicak"
+        if nem>30 and nem<=60 then lcdout $fe,$94,"Cok Sicak"
+        if nem>60 and nem<=85then lcdout $fe,$94,"Tehlikeli Sicak" 
+        if nem>85 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=34 then
+        if nem<=25 then lcdout $fe,$94,"Sicak"
+        if nem>25 and nem<=55 then lcdout $fe,$94,"Cok Sicak"
+        if nem>55 and nem<=80 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>80 then lcdout $fe,$94,"Cok Tehlikeli Sicak"  
+    elseif sicaklik=35 then
+        if nem<=10 then lcdout $fe,$94,"Sicak"
+        if nem>10 and nem<=50 then lcdout $fe,$94,"Cok Sicak"
+        if nem>50 and nem<=75 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>75 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=36 then
+        if nem<=45 then lcdout $fe,$94,"Cok Sicak"
+        if nem>45 and nem<=65 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>65 then lcdout $fe,$94,"Cok Tehlikeli Sicak" 
+    elseif sicaklik=37 then
+        if nem<=35 then lcdout $fe,$94,"Cok Sicak"
+        if nem>35 and nem<=60 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>60 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=38 then
+        if nem<=30 then lcdout $fe,$94,"Cok Sicak"
+        if nem>30 and nem<=55 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>55 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=39 then
+        if nem<=30 then lcdout $fe,$94,"Cok Sicak"
+        if nem>30 and nem<=50 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>50 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=40 then
+        if nem<=25 then lcdout $fe,$94,"Cok Sicak"
+        if nem>25 and nem<=45 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>45 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=41 then
+        if nem<=20 then lcdout $fe,$94,"Cok Sicak"
+        if nem>20 and nem<=40 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>40 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=42 then
+        if nem<=15 then lcdout $fe,$94,"Cok Sicak"
+        if nem>15 and nem<=40 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>40 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=43 then
+        if nem<=10 then lcdout $fe,$94,"Cok Sicak"
+        if nem>10 and nem<=35 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>35 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=44 then
+        if nem<=5 then lcdout $fe,$94,"Cok Sicak"
+        if nem>5 and nem<=30 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>30 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=45 and sicaklik=46 then
+        if nem<=5 then lcdout $fe,$94,"Cok Sicak"
+        if nem>5 and nem<=25 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>25 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=47 then
+        if nem<=20 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>20 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik=48 then
+        if nem<=20 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>20 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    elseif sicaklik>48 then
+        if nem<=15 then lcdout $fe,$94,"Tehlikeli Sicak"
+        if nem>15 then lcdout $fe,$94,"Cok Tehlikeli Sicak"
+    endif  
+    pause 200
+return  
+
+                                                                          
+
+
+
+
+
