@@ -1,0 +1,66 @@
+
+ADCON1=7                                        
+
+bekle Con 150
+x var byte [10]
+x[0]=%00111111
+x[1]=%00000110      
+x[2]=%01011011
+x[3]=%01001111
+x[4]=%01100110
+x[5]=%01101101
+x[6]=%01111100
+x[7]=%00000111
+x[8]=%01111111
+x[9]=%01101111
+
+TrisA=0
+TrisB=0
+PortA=0
+PortB=0
+tur var byte
+k var byte
+i var byte
+m var byte
+
+tur=8
+label:
+    gosub ileri
+    tur=tur+1
+    k=tur dig 0
+    m=tur dig 1
+    gosub goster
+    PortA=0
+goto label
+
+goster:
+    
+    if tur<10 then
+        PortA.1=1
+        PortB=x[tur]
+        pause 300
+    else
+        for i=0 to 30
+            PortA.1=1
+            PortB=x[k]
+            pause 5
+            PortA=0 :PortB=0
+            
+            PortA.0=1 
+            PortB=x[m]
+            pause 5
+            
+            PortA=0 :PortB=0
+        next i
+    endif
+return
+
+ileri:
+    for i=0 to 8
+        PortB=%00000001:pause Bekle
+        PortB=%00000010 :pause Bekle
+        PortB=%00000100 :pause Bekle
+        PortB=%00001000:pause Bekle
+    next i
+return
+    

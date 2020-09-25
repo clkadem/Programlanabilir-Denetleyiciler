@@ -1,0 +1,126 @@
+ADCON1=7                                        
+
+bekle Con 150
+x var byte [10]
+x[0]=%00111111
+x[1]=%00000110      
+x[2]=%01011011
+x[3]=%01001111
+x[4]=%01100110
+x[5]=%01101101
+x[6]=%01111100
+x[7]=%00000111
+x[8]=%01111111
+x[9]=%01101111
+
+TrisA=8
+TrisB=0
+PortA=0
+PortB=0
+
+k var byte
+i var byte
+m var byte
+tur var byte : tur=0
+atilan var byte : atilan=0
+
+label:
+    PortB.4=1 :PortB.5=0 :PortB.6=0 :PortB.7=0 
+    if PortA.3==1 then
+        if tur>98 then
+            gosub goster
+        elseif atilan!=0 then
+            gosub goster2
+        else
+            tur=tur+1
+            gosub goster
+        endif
+    endif
+    PortB.4=0 :PortB.5=1 :PortB.6=0 :PortB.7=0
+    if PortA.3==1 then
+        if tur=0 or tur<1 then 
+            tur=0 :gosub goster
+        elseif atilan!=0 then
+            gosub goster2
+        else
+            tur=tur-1
+            gosub goster
+        endif
+    endif
+    PortB.4=0 :PortB.5=0 :PortB.6=1 :PortB.7=0
+    if PortA.3==1 then
+        while atilan<tur
+            gosub ileri
+            atilan=atilan+1
+            gosub goster2
+            PortB.4=0 :PortB.5=0 :PortB.6=0 :PortB.7=1
+            if PortA.3==1 then 
+                PortB=0
+                goto label
+            endif
+        wend
+        atilan=0
+     endif    
+    
+    
+    
+goto label
+
+goster:
+    k=tur dig 0
+    m=tur dig 1
+    if tur<10 then
+        PortA.1=1
+        PortB=x[tur]
+        pause 400
+    else
+        for i=0 to 40
+            PortA.1=1
+            PortB=x[k]
+            pause 5
+            PortA=0 :PortB=0
+            
+            PortA.0=1 
+            PortB=x[m]
+            pause 5
+            
+            PortA=0 :PortB=0
+        next i
+    endif
+    PortA=0
+return
+
+goster2:
+    k=atilan dig 0
+    m=atilan dig 1
+    if atilan<10 then
+        PortA.1=1
+        PortB=x[atilan]
+        pause 400
+        PortA=0
+    else
+        for i=0 to 40
+            PortA.1=1
+            PortB=x[k]
+            pause 5
+            PortA=0 :PortB=0
+            
+            PortA.0=1 
+            PortB=x[m]
+            pause 5
+            
+            PortA=0 :PortB=0
+        next i
+    endif
+return
+
+ileri:
+    for i=0 to 8
+        PortB=%00000001:pause Bekle
+        PortB=%00000010 :pause Bekle
+        PortB=%00000100 :pause Bekle
+        PortB=%00001000:pause Bekle
+    next i
+return
+
+

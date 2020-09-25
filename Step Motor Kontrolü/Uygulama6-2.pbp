@@ -1,0 +1,39 @@
+define LOADER_USED 1
+ADCON1=7                                         'porta ve porte yi dijitale ayarla
+
+PAUSE 100
+define HSER_RCSTA 90h
+DEFINE HSER_TXSTA 24h
+DEFINE HSER_BAUD 9600
+DEFINE HSER_CLROERR 1
+bekle Con 200
+i var byte
+
+
+
+TrisA=0
+TrisB=0
+PortA=0
+PortB=0
+label:
+    gosub ileri
+    gosub geri
+goto label
+
+ileri:
+    for i=0 to 9 
+        PortB=%00000001:pause Bekle
+        PortB=%00000010 :pause Bekle
+        PortB=%00000100 :pause Bekle
+        PortB=%00001000:pause Bekle
+    next i
+return
+
+geri:
+    for i=0 to 9
+        PortB=%00001000:pause Bekle
+        PortB=%00000100 :pause Bekle
+        portB=%00000010 :pause Bekle
+        PortB=%00000001:pause Bekle
+    next i
+return
