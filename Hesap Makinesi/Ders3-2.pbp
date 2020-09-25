@@ -1,0 +1,37 @@
+define LOADER_USED 1
+ADCON1=7
+
+TrisA=0
+TrisB=0
+y var byte
+a var byte
+z var byte
+i var byte
+x var byte [10]
+x[0]=%00111111
+x[1]=%00000110
+x[2]=%01011011
+x[3]=%01001111
+x[4]=%01100110
+x[5]=%01101101
+x[6]=%01111100
+x[7]=%00000111
+x[8]=%01111111
+x[9]=%01101111
+PortA=0
+PortB=0
+label:
+
+    for i=0 to 99
+        for a=0 to 50
+            y=i dig 0
+            z=i dig 1
+            PortA.0=1 :PortA.1=0
+            PortB=x[y]
+            pause 5
+            PortA.0=0 :PortA.1=1
+            PortB=x[z]
+            pause 5
+        next a
+    next i
+goto label

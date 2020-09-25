@@ -1,0 +1,104 @@
+define LOADER_USED 1
+ADCON1=7
+TrisA=0
+TrisB=0
+sonuc var byte
+i var byte
+k var byte
+y var byte
+z var byte
+h var byte  
+a var byte
+x var byte [10]
+x[0]=%00111111
+x[1]=%00000110      
+x[2]=%01011011
+x[3]=%01001111
+x[4]=%01100110
+x[5]=%01101101
+x[6]=%01111100
+x[7]=%00000111
+x[8]=%01111111
+x[9]=%01101111
+PortA=0
+PortB=0
+
+label:
+    gosub tus
+    y=i dig 0
+    z=i dig 1
+    gosub goster
+
+    
+goto label
+
+goster:
+    Portb=0
+    TrisB=0
+    PortA.0=1 :PortA.1=0
+    PortB=x[y]
+    pause 5
+    PortA.0=0 :PortA.1=1
+    PortB=x[z]
+    pause 5
+return    
+    
+tus:
+    PortA=0
+    TrisB=%00001111
+    PortB.4=1 :PortB.5=0 :PortB.6=0 :PortB.7=0
+    if PortB.3=1 then i=1
+    if PortB.2=1 then i=2
+    if PortB.1=1 then i=3
+    if PortB.0=1 then h="+" :k=i
+    
+    PortB.4=0 :PortB.5=1 :PortB.6=0 :PortB.7=0
+    if PortB.3=1 then i=4
+    if PortB.2=1 then i=5
+    if PortB.1=1 then i=6
+    if PortB.0=1 then h="-"  :k=i
+    
+    PortB.4=0 :PortB.5=0 :PortB.6=1 :PortB.7=0
+    if PortB.3=1 then i=7
+    if PortB.2=1 then i=8
+    if PortB.1=1 then i=9
+    if PortB.0=1 then h="*"  :k=i
+    
+    PortB.4=0 :PortB.5=0 :PortB.6=0 :PortB.7=1
+    if PortB.3=1 then i=0
+    if PortB.2=1 then i=0
+    if PortB.1=1 then goto islem
+    if PortB.0=1 then h="/"    :k=i
+    
+return
+islem:
+    select case h
+        case "+"
+            sonuc=k+i
+        case "-"
+            if k>=i then    
+                sonuc=k-i
+            else 
+                sonuc=i-k
+            endif
+        case "*"
+            sonuc=k*i
+        case "/"
+            sonuc=k/i
+    end select
+    y=sonuc dig 0
+    z=sonuc dig 1
+    TrisB=0
+    PortA.0=1 :PortA.1=0
+    PortB=x[y]
+    pause 5
+    PortA.0=0 :PortA.1=1
+    PortB=x[z]
+    pause 5
+    PortA=0
+    TrisB=%00001111
+    PortB.4=0 :PortB.5=0 :PortB.6=0 :PortB.7=1
+    if PortB.2=1 then i=0 :k=0:h=0:sonuc=0  :goto label
+    
+   
+goto islem
