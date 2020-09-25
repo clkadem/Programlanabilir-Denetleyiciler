@@ -1,0 +1,12 @@
+define LOADER_USED 1
+TrisA=0
+TrisB=0
+ADCON1=7
+label:
+    PortB.0=0
+    pause 500
+    PortB.0=1
+    sound PortA.5,[50,10]
+    pause 500
+    
+goto label
