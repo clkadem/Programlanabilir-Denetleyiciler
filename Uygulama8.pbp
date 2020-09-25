@@ -1,0 +1,80 @@
+DEFINE LCD_DREG PORTD           'LCD data portunun baðlandýðý pic portu 
+
+DEFINE LCD_DBIT 0                        '4-bit bus için data bit(0yada4) baþlangýç
+
+DEFINE LCD_RSREG PORTE          'LCD RS in baðlandýðý pic portu 
+
+DEFINE LCD_RSBIT 0                      'RS in baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_EREG PORTE            'LCD E nin baðlandýðý pic portu 
+
+DEFINE LCD_EBIT 2                        'LCD E nin baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_BITS 8                             'PortD nin 8 biti veri transferi için kullanýldý
+
+TRISE=%000                                       'Aslýnda PortE.1 direkt topraða çekilse olurdu ama 
+
+PortE.1=0                                             ' PortE.1=0 olarak yaptýk
+
+ADCON1=7                                                'porta ve porte yi dijitale ayarla
+define HSER_RCSTA 90h
+DEFINE HSER_TXSTA 24h
+DEFINE HSER_BAUD 9600
+DEFINE HSER_CLROERR 1
+TrisB=%01111000
+PortB=0
+
+i var byte :i=0
+j var byte :j=" "
+k var byte :
+m var byte :m=128
+
+label:
+    if i=11 then 
+        gosub oku
+        lcdout $fe,1
+        j=" "
+    endif
+    PortB.0=1 : PortB.1=0 : PortB.2=0
+    if PortB.3==1 then j=1
+    if PortB.4==1 then j=4
+    if PortB.5==1 then j=7
+    if PortB.6==1 then j=0
+    
+    PortB.0=0 : PortB.1=1 : PortB.2=0
+    if PortB.3==1 then j=2
+    if PortB.4==1 then j=5
+    if PortB.5==1 then j=8
+    if PortB.6==1 then j=0
+    
+    PortB.0=0 : PortB.1=0 : PortB.2=1
+    if PortB.3==1 then j=3
+    if PortB.4==1 then j=6
+    if PortB.5==1 then j=9
+    if PortB.6==1 then j=0
+    
+    if j!=" " then gosub yaz
+    j=" "
+    
+
+goto label
+yaz:
+    
+    write i,j
+    i=i+1
+    lcdout $fe,m,#j
+    pause 250
+    m=m+1
+return
+oku:
+    
+    for i=0 to 10
+        read i,j
+        hserout[#j]
+    next i
+    hserout[13,10]
+    i=0
+    m=128
+    
+    
+return
