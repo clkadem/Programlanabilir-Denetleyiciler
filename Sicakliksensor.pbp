@@ -1,0 +1,97 @@
+DEFINE LCD_DREG PORTD           'LCD data portunun baðlandýðý pic portu 
+
+DEFINE LCD_DBIT 0                        '4-bit bus için data bit(0yada4) baþlangýç
+
+DEFINE LCD_RSREG PORTE          'LCD RS in baðlandýðý pic portu 
+
+DEFINE LCD_RSBIT 0                      'RS in baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_EREG PORTE            'LCD E nin baðlandýðý pic portu 
+
+DEFINE LCD_EBIT 2                        'LCD E nin baðlandýðý pic portE nin bit numarasý
+
+DEFINE LCD_BITS 8                             'PortD nin 8 biti veri transferi için kullanýldý
+
+TRISE=%000                                       'Aslýnda PortE.1 direkt topraða çekilse olurdu ama 
+
+PortE.1=0                                             ' PortE.1=0 olarak yaptýk
+
+ADCON1=7                                         'porta ve porte yi dijitale ayarla
+
+PAUSE 100
+PortB=0
+
+symbol  sensor=PortB.0
+nem var byte
+ondaliknem var byte
+sicaklik var byte
+ondaliksicaklik var byte
+kontrol var byte
+i var byte
+lcdout $fe,$40,28,20,28,0,0,0,0
+
+label:
+    nem=0 :ondaliknem=0
+    sicaklik=0 :ondaliksicaklik=0
+    TrisB=0
+    sensor=0
+    pause 18                   'Milisaniye
+    sensor=1
+    pauseus 40                 'Nanosaniye
+    TrisB=1
+    while sensor =0
+    
+    wend
+    pauseus 80
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus 40
+        if sensor=1 then nem.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus 40
+        if sensor=1 then ondaliknem.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus 40
+        if sensor=1 then sicaklik.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus 40
+        if sensor=1 then ondaliksicaklik.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    for i=7 to 0 step -1
+        while sensor=0
+        wend
+        pauseus 40
+        if sensor=1 then kontrol.0[i]=1
+        while sensor=1
+        wend
+    next i
+    
+    lcdout $fe,1
+    lcdout "Nem : ",#nem,",",#ondaliknem,"%"
+    lcdout $fe,$C0,"Sicaklik : ",#sicaklik,",",#ondaliksicaklik,0,"C"
+    pause 200
+    
+    
+goto label
